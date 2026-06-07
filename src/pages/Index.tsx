@@ -2,6 +2,7 @@ import { useState } from "react";
 import { SearchHeader } from "@/components/SearchHeader";
 import { SearchForm } from "@/components/SearchForm";
 import { ResultCard } from "@/components/ResultCard";
+import { LegalAdvisor } from "@/components/LegalAdvisor";
 import { Loader2 } from "lucide-react";
 
 export interface CaseResult {
@@ -13,6 +14,7 @@ export interface CaseResult {
   similarity: number;
   ipc_sections?: string;
   verdict?: string;
+  explanation?: string;
 }
 
 const Index = () => {
@@ -22,6 +24,7 @@ const Index = () => {
   const [caseTypeFilter, setCaseTypeFilter] = useState("All Types");
   const [verdictFilter, setVerdictFilter] = useState("All");
   const [courtFilter, setCourtFilter] = useState("All Courts");
+  const [activeTab, setActiveTab] = useState<"search" | "advisor">("search");
 
   const handleSearch = async (query: string) => {
     setLoading(true);
@@ -47,86 +50,98 @@ const Index = () => {
   const filteredResults = results.filter((r) => {
     const matchType = caseTypeFilter === "All Types" || r.case_type === caseTypeFilter;
     const matchVerdict = verdictFilter === "All" || r.verdict === verdictFilter;
-    const matchCourt = courtFilter === "All Courts" ||
-      (courtFilter === "Supreme Court" && r.court.includes("Supreme")) ||
-      (courtFilter === "High Court" && r.court.includes("High")) ||
-      (courtFilter === "District Court" && r.court.includes("District"));
+    const matchCourt = courtFilter === "All Courts" || r.court === courtFilter;
     return matchType && matchVerdict && matchCourt;
   });
 
-  const verdictOptions = ["All", "Convicted", "Acquitted", "Appeal Allowed", "Dismissed"];
-  const verdictColors: Record<string, string> = {
-    "All": "bg-primary/15 text-primary border-primary/30",
-    "Convicted": "bg-red-500/15 text-red-400 border-red-500/30",
-    "Acquitted": "bg-green-500/15 text-green-400 border-green-500/30",
-    "Appeal Allowed": "bg-blue-500/15 text-blue-400 border-blue-500/30",
-    "Dismissed": "bg-orange-500/15 text-orange-400 border-orange-500/30",
-  };
+  const courtOptions = ["All Courts", ...Array.from(new Set(results.map((r) => r.court)))];
+  const caseTypeOptions = ["All Types", ...Array.from(new Set(results.map((r) => r.case_type)))];
 
   return (
     <div className="min-h-screen bg-background">
       <SearchHeader />
-      <main className="container max-w-4xl mx-auto px-4 py-12">
-        <SearchForm onSearch={handleSearch} loading={loading} />
+      <main className="max-w-3xl mx-auto px-4 py-8">
+        {/* Tabs */}
+        <div className="flex gap-2 mb-6">
+          <button
+            onClick={() => setActiveTab("search")}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeTab === "search"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            🔍 Case Search
+          </button>
+          <button
+            onClick={() => setActiveTab("advisor")}
+            className={`px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+              activeTab === "advisor"
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            ⚖️ Legal Advisor
+          </button>
+        </div>
 
-        {searched && !loading && results.length > 0 && (
-          <div className="mt-6 space-y-4">
-            <div className="flex flex-wrap gap-3 items-center">
-              <select
-                value={caseTypeFilter}
-                onChange={(e) => setCaseTypeFilter(e.target.value)}
-                className="bg-card border border-border rounded-lg px-3 py-1.5 text-sm text-foreground"
-              >
-                {["All Types","Criminal","Civil","Land&Property","Tax","Financial","Motorvehicles","Industrial&Labour","Constitution"].map(t => (
-                  <option key={t}>{t}</option>
-                ))}
-              </select>
-
-              <select
-                value={courtFilter}
-                onChange={(e) => setCourtFilter(e.target.value)}
-                className="bg-card border border-border rounded-lg px-3 py-1.5 text-sm text-foreground"
-              >
-                {["All Courts","Supreme Court","High Court","District Court"].map(c => (
-                  <option key={c}>{c}</option>
-                ))}
-              </select>
-
-              <div className="flex flex-wrap gap-2">
-                {verdictOptions.map(v => (
-                  <button
-                    key={v}
-                    onClick={() => setVerdictFilter(v)}
-                    className={"px-3 py-1 rounded-full text-xs border transition-all " +
-                      (verdictFilter === v ? verdictColors[v] + " font-semibold" : "border-border text-muted-foreground hover:border-primary/40")}
+        {activeTab === "search" && (
+          <>
+            <SearchForm onSearch={handleSearch} loading={loading} />
+            {searched && !loading && (
+              <div className="mt-4">
+                <div className="flex flex-wrap gap-2 mb-3">
+                  <select
+                    className="text-sm rounded-md border border-border bg-background text-foreground px-3 py-1.5"
+                    value={caseTypeFilter}
+                    onChange={(e) => setCaseTypeFilter(e.target.value)}
                   >
-                    {v}
-                  </button>
+                    {caseTypeOptions.map((o) => <option key={o}>{o}</option>)}
+                  </select>
+                  <select
+                    className="text-sm rounded-md border border-border bg-background text-foreground px-3 py-1.5"
+                    value={courtFilter}
+                    onChange={(e) => setCourtFilter(e.target.value)}
+                  >
+                    {courtOptions.map((o) => <option key={o}>{o}</option>)}
+                  </select>
+                  {["All", "Convicted", "Acquitted", "Appeal Allowed", "Dismissed"].map((v) => (
+                    <button
+                      key={v}
+                      onClick={() => setVerdictFilter(v)}
+                      className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                        verdictFilter === v
+                          ? "bg-primary text-primary-foreground"
+                          : "bg-muted text-muted-foreground hover:text-foreground"
+                      }`}
+                    >
+                      {v}
+                    </button>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">{filteredResults.length} results</p>
+              </div>
+            )}
+            {loading && (
+              <div className="flex flex-col items-center gap-3 mt-16">
+                <Loader2 className="h-10 w-10 animate-spin text-primary" />
+                <p className="text-muted-foreground text-sm">Searching cases...</p>
+              </div>
+            )}
+            {!loading && searched && filteredResults.length === 0 && (
+              <p className="text-center text-muted-foreground mt-16">No results found.</p>
+            )}
+            {!loading && filteredResults.length > 0 && (
+              <div className="mt-6 space-y-5">
+                {filteredResults.map((r, i) => (
+                  <ResultCard key={i} result={r} />
                 ))}
               </div>
-            </div>
-            <p className="text-xs text-muted-foreground">{filteredResults.length} results</p>
-          </div>
+            )}
+          </>
         )}
 
-        {loading && (
-          <div className="flex flex-col items-center gap-3 mt-16">
-            <Loader2 className="h-10 w-10 animate-spin text-primary" />
-            <p className="text-muted-foreground text-sm">Searching cases...</p>
-          </div>
-        )}
-
-        {!loading && searched && filteredResults.length === 0 && (
-          <p className="text-center text-muted-foreground mt-16">No results found.</p>
-        )}
-
-        {!loading && filteredResults.length > 0 && (
-          <div className="mt-6 space-y-5">
-            {filteredResults.map((r, i) => (
-              <ResultCard key={i} result={r} />
-            ))}
-          </div>
-        )}
+        {activeTab === "advisor" && <LegalAdvisor />}
       </main>
     </div>
   );
