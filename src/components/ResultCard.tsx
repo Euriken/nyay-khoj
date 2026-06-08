@@ -1,5 +1,6 @@
 import { Badge } from "@/components/ui/badge";
 import { ExternalLink } from "lucide-react";
+import { useEffect, useState } from "react";
 
 interface CaseResult {
   title: string;
@@ -10,10 +11,37 @@ interface CaseResult {
   similarity: number;
   ipc_sections?: string;
   verdict?: string;
-  explanation?: string;
 }
 
-export const ResultCard = ({ result }: { result: CaseResult }) => {
+export const ResultCard = ({ result, query }: { result: CaseResult; query: string }) => {
+  const [explanation, setExplanation] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchExplanation = async () => {
+      try {
+        const res = await fetch("http://localhost:5000/explain", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            query,
+            title: result.title,
+            text: result.text,
+            verdict: result.verdict,
+            ipc_sections: result.ipc_sections,
+          }),
+        });
+        const data = await res.json();
+        setExplanation(data.explanation);
+      } catch {
+        setExplanation("Could not load explanation.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchExplanation();
+  }, []);
+
   const similarity = Math.round(result.similarity * 100);
 
   const verdictColor = () => {
@@ -48,12 +76,17 @@ export const ResultCard = ({ result }: { result: CaseResult }) => {
       <p className="text-sm text-muted-foreground leading-relaxed">
         {result.text ? result.text.slice(0, 300) + "..." : ""}
       </p>
-      {result.explanation && (
-        <div className="mt-2 p-3 rounded-md bg-primary/5 border border-primary/20">
-          <p className="text-xs font-medium text-primary mb-1">🤖 AI Explanation</p>
-          <p className="text-sm text-muted-foreground leading-relaxed">{result.explanation}</p>
-        </div>
-      )}
+      <div className="mt-2 p-3 rounded-md bg-primary/5 border border-primary/20 min-h-[60px]">
+        <p className="text-xs font-medium text-primary mb-1">🤖 AI Explanation</p>
+        {loading ? (
+          <div className="space-y-2 animate-pulse">
+            <div className="h-3 bg-primary/20 rounded w-full"></div>
+            <div className="h-3 bg-primary/20 rounded w-4/5"></div>
+          </div>
+        ) : (
+          <p className="text-sm text-muted-foreground leading-relaxed">{explanation}</p>
+        )}
+      </div>
       {result.url && (
         <a href={result.url} target="_blank" rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">

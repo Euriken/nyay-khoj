@@ -14,21 +14,22 @@ export interface CaseResult {
   similarity: number;
   ipc_sections?: string;
   verdict?: string;
-  explanation?: string;
 }
 
 const Index = () => {
   const [results, setResults] = useState<CaseResult[]>([]);
   const [loading, setLoading] = useState(false);
   const [searched, setSearched] = useState(false);
+  const [query, setQuery] = useState("");
   const [caseTypeFilter, setCaseTypeFilter] = useState("All Types");
   const [verdictFilter, setVerdictFilter] = useState("All");
   const [courtFilter, setCourtFilter] = useState("All Courts");
   const [activeTab, setActiveTab] = useState<"search" | "advisor">("search");
 
-  const handleSearch = async (query: string) => {
+  const handleSearch = async (q: string) => {
     setLoading(true);
     setSearched(true);
+    setQuery(q);
     setCaseTypeFilter("All Types");
     setVerdictFilter("All");
     setCourtFilter("All Courts");
@@ -36,7 +37,7 @@ const Index = () => {
       const res = await fetch("http://127.0.0.1:5000/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ query }),
+        body: JSON.stringify({ query: q }),
       });
       const data = await res.json();
       setResults(data);
@@ -134,7 +135,7 @@ const Index = () => {
             {!loading && filteredResults.length > 0 && (
               <div className="mt-6 space-y-5">
                 {filteredResults.map((r, i) => (
-                  <ResultCard key={i} result={r} />
+                  <ResultCard key={i} result={r} query={query} />
                 ))}
               </div>
             )}
