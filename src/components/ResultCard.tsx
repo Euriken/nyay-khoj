@@ -13,14 +13,14 @@ interface CaseResult {
   verdict?: string;
 }
 
-export const ResultCard = ({ result, query }: { result: CaseResult; query: string }) => {
+export const ResultCard = ({ result, query, index }: { result: CaseResult; query: string; index: number }) => {
   const [explanation, setExplanation] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchExplanation = async () => {
       try {
-        const res = await fetch("http://localhost:5000/explain", {
+        const res = await fetch("http://127.0.0.1:5000/explain", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -44,56 +44,93 @@ export const ResultCard = ({ result, query }: { result: CaseResult; query: strin
 
   const similarity = Math.round(result.similarity * 100);
 
-  const verdictColor = () => {
-    if (result.verdict === "Convicted") return "bg-red-500/15 text-red-400 border-red-500/30";
-    if (result.verdict === "Acquitted") return "bg-green-500/15 text-green-400 border-green-500/30";
-    if (result.verdict === "Appeal Allowed") return "bg-blue-500/15 text-blue-400 border-blue-500/30";
-    return "bg-orange-500/15 text-orange-400 border-orange-500/30";
+  const verdictStyle = () => {
+    if (result.verdict === "Convicted") return "bg-red-500/10 text-red-400 border-red-500/25";
+    if (result.verdict === "Acquitted") return "bg-green-500/10 text-green-400 border-green-500/25";
+    if (result.verdict === "Appeal Allowed") return "bg-blue-500/10 text-blue-400 border-blue-500/25";
+    return "bg-primary/10 text-primary border-primary/25";
   };
 
   return (
-    <div className="rounded-lg border border-border bg-card p-5 space-y-3 hover:border-primary/40 transition-colors">
-      <h2 className="font-semibold text-lg text-foreground leading-snug">
-        {result.title}
-      </h2>
-      <div className="flex flex-wrap gap-2">
-        <Badge variant="secondary" className="text-xs">{result.court}</Badge>
-        <Badge variant="outline" className="text-xs">{result.case_type}</Badge>
-        <Badge className="text-xs bg-primary/15 text-primary border-primary/30">
-          {similarity}% match
-        </Badge>
-        {result.verdict && result.verdict !== "See Judgment" && (
-          <Badge className={"text-xs border " + verdictColor()}>
-            {result.verdict}
-          </Badge>
-        )}
-        {result.ipc_sections && (
-          <Badge className="text-xs bg-purple-500/15 text-purple-400 border-purple-500/30">
-            IPC: {result.ipc_sections}
-          </Badge>
-        )}
-      </div>
-      <p className="text-sm text-muted-foreground leading-relaxed">
-        {result.text ? result.text.slice(0, 300) + "..." : ""}
-      </p>
-      <div className="mt-2 p-3 rounded-md bg-primary/5 border border-primary/20 min-h-[60px]">
-        <p className="text-xs font-medium text-primary mb-1">🤖 AI Explanation</p>
-        {loading ? (
-          <div className="space-y-2 animate-pulse">
-            <div className="h-3 bg-primary/20 rounded w-full"></div>
-            <div className="h-3 bg-primary/20 rounded w-4/5"></div>
+    <div className="rounded-lg border border-border bg-card hover:border-primary/40 transition-colors overflow-hidden">
+
+      {/* Card top accent line */}
+      <div className="h-[2px] bg-gradient-to-r from-primary/60 via-primary/20 to-transparent" />
+
+      <div className="p-5 space-y-3">
+
+        {/* Title row */}
+        <div className="flex items-start gap-3">
+          <span className="mt-0.5 w-6 h-6 rounded-full bg-primary/15 border border-primary/30 text-primary text-xs flex items-center justify-center flex-shrink-0 font-medium">
+            {index + 1}
+          </span>
+          <h2 className="font-medium text-foreground leading-snug text-sm flex-1"
+              style={{ fontFamily: "'EB Garamond', serif", fontSize: "15px" }}>
+            {result.title}
+          </h2>
+          <span className="text-primary font-semibold text-sm flex-shrink-0">
+            {similarity}%
+          </span>
+        </div>
+
+        {/* Badges */}
+        <div className="flex flex-wrap gap-1.5 pl-9">
+          <span className="px-2.5 py-0.5 rounded-full text-xs border bg-primary/10 text-primary border-primary/25">
+            {result.court}
+          </span>
+          <span className="px-2.5 py-0.5 rounded-full text-xs border border-border text-muted-foreground">
+            {result.case_type}
+          </span>
+          {result.verdict && result.verdict !== "See Judgment" && (
+            <span className={`px-2.5 py-0.5 rounded-full text-xs border ${verdictStyle()}`}>
+              {result.verdict}
+            </span>
+          )}
+          {result.ipc_sections && (
+            <span className="px-2.5 py-0.5 rounded-full text-xs border bg-purple-500/10 text-purple-400 border-purple-500/25 cursor-pointer hover:bg-purple-500/20 transition-colors">
+              IPC: {result.ipc_sections}
+            </span>
+          )}
+        </div>
+
+        {/* Excerpt */}
+        <p className="text-xs text-muted-foreground leading-relaxed pl-9 font-legal">
+          {result.text ? result.text.slice(0, 280) + "…" : ""}
+        </p>
+
+        {/* AI Explanation */}
+        <div className="ml-9 p-3 rounded-md bg-primary/5 border border-primary/15">
+          <div className="flex items-center gap-1.5 mb-2">
+            <div className="w-1.5 h-1.5 rounded-full bg-primary" />
+            <p className="text-[10px] font-medium text-primary tracking-widest uppercase">
+              Why this judgment matches
+            </p>
           </div>
-        ) : (
-          <p className="text-sm text-muted-foreground leading-relaxed">{explanation}</p>
-        )}
+          {loading ? (
+            <div className="space-y-1.5 animate-pulse">
+              <div className="h-2.5 bg-primary/15 rounded w-full" />
+              <div className="h-2.5 bg-primary/15 rounded w-4/5" />
+            </div>
+          ) : (
+            <p className="text-xs text-muted-foreground leading-relaxed font-legal">{explanation}</p>
+          )}
+        </div>
+
+        {/* Footer */}
+        <div className="pl-9 flex items-center justify-between pt-1 border-t border-border/50">
+          {result.url ? (
+            <a href={result.url} target="_blank" rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:underline">
+              View Full Judgment
+              <ExternalLink className="h-3 w-3" />
+            </a>
+          ) : <span />}
+          <span className="text-[10px] text-muted-foreground tracking-wide uppercase">
+            {result.court}
+          </span>
+        </div>
+
       </div>
-      {result.url && (
-        <a href={result.url} target="_blank" rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
-          View Full Judgment
-          <ExternalLink className="h-3.5 w-3.5" />
-        </a>
-      )}
     </div>
   );
 };
