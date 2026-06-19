@@ -1,4 +1,5 @@
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 interface Message {
   role: "user" | "assistant";
@@ -44,7 +45,13 @@ export const LegalAdvisor = () => {
                 ? "bg-primary text-primary-foreground"
                 : "bg-muted text-foreground"
             }`}>
-              {msg.content}
+              {msg.role === "assistant" ? (
+                <div className="prose prose-sm prose-invert max-w-none">
+                  <ReactMarkdown>{msg.content}</ReactMarkdown>
+                </div>
+              ) : (
+                msg.content
+              )}
             </div>
           </div>
         ))}

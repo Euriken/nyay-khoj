@@ -25,6 +25,7 @@ const Index = () => {
   const [verdictFilter, setVerdictFilter] = useState("All");
   const [courtFilter, setCourtFilter] = useState("All Courts");
   const [activeTab, setActiveTab] = useState<"search" | "advisor">("search");
+  const [searchTrigger, setSearchTrigger] = useState("");
 
   const handleSearch = async (q: string) => {
     setLoading(true);
@@ -46,6 +47,12 @@ const Index = () => {
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleIpcClick = (ipc: string) => {
+    setActiveTab("search");
+    setSearchTrigger(ipc);
+    handleSearch(ipc);
   };
 
   const filteredResults = results.filter((r) => {
@@ -91,7 +98,6 @@ const Index = () => {
       <main className="max-w-5xl mx-auto px-6 py-8">
         {activeTab === "search" && (
           <>
-            {/* Hero — Lawyer greeting */}
             {!searched && (
               <div className="flex items-start gap-4 mb-8 p-5 rounded-lg border border-primary/20 bg-card/60">
                 <div className="w-12 h-12 rounded-full bg-primary/15 border-2 border-primary/40 flex items-center justify-center flex-shrink-0 text-xl">
@@ -111,9 +117,8 @@ const Index = () => {
               </div>
             )}
 
-            <SearchForm onSearch={handleSearch} loading={loading} />
+            <SearchForm onSearch={handleSearch} loading={loading} externalQuery={searchTrigger} />
 
-            {/* Filters */}
             {searched && !loading && (
               <div className="mt-5 space-y-3">
                 <div className="flex flex-wrap gap-2 items-center">
@@ -168,7 +173,7 @@ const Index = () => {
             {!loading && filteredResults.length > 0 && (
               <div className="mt-6 space-y-4">
                 {filteredResults.map((r, i) => (
-                  <ResultCard key={i} result={r} query={query} index={i} />
+                  <ResultCard key={i} result={r} query={query} index={i} onIpcClick={handleIpcClick} />
                 ))}
               </div>
             )}
@@ -178,7 +183,6 @@ const Index = () => {
         {activeTab === "advisor" && <LegalAdvisor />}
       </main>
 
-      {/* Footer */}
       <footer className="border-t border-border mt-16 py-6">
         <div className="max-w-5xl mx-auto px-6 flex items-center justify-between">
           <p className="text-xs text-muted-foreground tracking-wide">

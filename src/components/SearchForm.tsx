@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Search } from "lucide-react";
@@ -6,10 +6,17 @@ import { Search } from "lucide-react";
 interface Props {
   onSearch: (query: string) => void;
   loading: boolean;
+  externalQuery?: string;
 }
 
-export const SearchForm = ({ onSearch, loading }: Props) => {
+export const SearchForm = ({ onSearch, loading, externalQuery }: Props) => {
   const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    if (externalQuery) {
+      setQuery(externalQuery);
+    }
+  }, [externalQuery]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,4 +1,3 @@
-import { Badge } from "@/components/ui/badge";
 import { ExternalLink } from "lucide-react";
 import { useEffect, useState } from "react";
 
@@ -13,7 +12,7 @@ interface CaseResult {
   verdict?: string;
 }
 
-export const ResultCard = ({ result, query, index }: { result: CaseResult; query: string; index: number }) => {
+export const ResultCard = ({ result, query, index, onIpcClick }: { result: CaseResult; query: string; index: number; onIpcClick?: (ipc: string) => void }) => {
   const [explanation, setExplanation] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -53,13 +52,8 @@ export const ResultCard = ({ result, query, index }: { result: CaseResult; query
 
   return (
     <div className="rounded-lg border border-border bg-card hover:border-primary/40 transition-colors overflow-hidden">
-
-      {/* Card top accent line */}
       <div className="h-[2px] bg-gradient-to-r from-primary/60 via-primary/20 to-transparent" />
-
       <div className="p-5 space-y-3">
-
-        {/* Title row */}
         <div className="flex items-start gap-3">
           <span className="mt-0.5 w-6 h-6 rounded-full bg-primary/15 border border-primary/30 text-primary text-xs flex items-center justify-center flex-shrink-0 font-medium">
             {index + 1}
@@ -73,7 +67,6 @@ export const ResultCard = ({ result, query, index }: { result: CaseResult; query
           </span>
         </div>
 
-        {/* Badges */}
         <div className="flex flex-wrap gap-1.5 pl-9">
           <span className="px-2.5 py-0.5 rounded-full text-xs border bg-primary/10 text-primary border-primary/25">
             {result.court}
@@ -87,18 +80,20 @@ export const ResultCard = ({ result, query, index }: { result: CaseResult; query
             </span>
           )}
           {result.ipc_sections && (
-            <span className="px-2.5 py-0.5 rounded-full text-xs border bg-purple-500/10 text-purple-400 border-purple-500/25 cursor-pointer hover:bg-purple-500/20 transition-colors">
+            <span
+              onClick={() => onIpcClick?.(result.ipc_sections!)}
+              className="px-2.5 py-0.5 rounded-full text-xs border bg-purple-500/10 text-purple-400 border-purple-500/25 cursor-pointer hover:bg-purple-500/20 transition-colors"
+              title="Click to search cases with this IPC section"
+            >
               IPC: {result.ipc_sections}
             </span>
           )}
         </div>
 
-        {/* Excerpt */}
         <p className="text-xs text-muted-foreground leading-relaxed pl-9 font-legal">
           {result.text ? result.text.slice(0, 280) + "…" : ""}
         </p>
 
-        {/* AI Explanation */}
         <div className="ml-9 p-3 rounded-md bg-primary/5 border border-primary/15">
           <div className="flex items-center gap-1.5 mb-2">
             <div className="w-1.5 h-1.5 rounded-full bg-primary" />
@@ -116,7 +111,6 @@ export const ResultCard = ({ result, query, index }: { result: CaseResult; query
           )}
         </div>
 
-        {/* Footer */}
         <div className="pl-9 flex items-center justify-between pt-1 border-t border-border/50">
           {result.url ? (
             <a href={result.url} target="_blank" rel="noopener noreferrer"
@@ -129,7 +123,6 @@ export const ResultCard = ({ result, query, index }: { result: CaseResult; query
             {result.court}
           </span>
         </div>
-
       </div>
     </div>
   );
