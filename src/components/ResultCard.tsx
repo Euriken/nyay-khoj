@@ -19,7 +19,7 @@ export const ResultCard = ({ result, query, index, onIpcClick }: { result: CaseR
   useEffect(() => {
     const fetchExplanation = async () => {
       try {
-        const res = await fetch("http://127.0.0.1:5000/explain", {
+        const res = await fetch("${import.meta.env.VITE_API_URL || "http://127.0.0.1:5000"}/explain", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -41,7 +41,9 @@ export const ResultCard = ({ result, query, index, onIpcClick }: { result: CaseR
     fetchExplanation();
   }, []);
 
-  const similarity = Math.round(result.similarity * 100);
+  const similarity = result.similarity > 1 
+  ? Math.round(result.similarity * 100) 
+  : Math.round(result.similarity * 10000) / 100;
 
   const verdictStyle = () => {
     if (result.verdict === "Convicted") return "bg-red-500/10 text-red-400 border-red-500/25";
@@ -63,7 +65,7 @@ export const ResultCard = ({ result, query, index, onIpcClick }: { result: CaseR
             {result.title}
           </h2>
           <span className="text-primary font-semibold text-sm flex-shrink-0">
-            {similarity}%
+          {similarity > 1 ? `${Math.round(similarity)}%` : `${similarity.toFixed(1)}%`}
           </span>
         </div>
 
