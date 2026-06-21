@@ -19,7 +19,7 @@ export const ResultCard = ({ result, query, index, onIpcClick }: { result: CaseR
   useEffect(() => {
     const fetchExplanation = async () => {
       try {
-        const res = await fetch("${import.meta.env.VITE_API_URL || "http://127.0.0.1:5000"}/explain", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL || "http://127.0.0.1:5000"}`/explain", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
