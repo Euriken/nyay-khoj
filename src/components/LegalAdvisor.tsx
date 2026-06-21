@@ -19,7 +19,7 @@ export const LegalAdvisor = () => {
     setInput("");
     setLoading(true);
 
-    const res = await fetch("https://euriken-nyay-khoj.hf.space"/chat", {
+    const res = await fetch("https://euriken-nyay-khoj.hf.space/chat", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ message: input, history: messages }),

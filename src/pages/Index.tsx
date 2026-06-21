@@ -35,7 +35,7 @@ const Index = () => {
     setVerdictFilter("All");
     setCourtFilter("All Courts");
     try {
-      const res = await fetch("https://euriken-nyay-khoj.hf.space"/search", {
+      const res = await fetch("https://euriken-nyay-khoj.hf.space/search", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: q }),

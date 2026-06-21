@@ -19,7 +19,7 @@ export const ResultCard = ({ result, query, index, onIpcClick }: { result: CaseR
   useEffect(() => {
     const fetchExplanation = async () => {
       try {
-        const res = await fetch("https://euriken-nyay-khoj.hf.space"/explain", {
+        const res = await fetch("https://euriken-nyay-khoj.hf.space/explain", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
