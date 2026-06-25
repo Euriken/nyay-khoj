@@ -250,7 +250,7 @@ const Index = () => {
     handleSearch(query, currentPage + 1, true);
   };
 
-  const hasMore = results.length < totalResults;
+  const hasMore = (results?.length ?? 0) < totalResults;
 
   const handleVerdictChange = (v: string) => {
     setVerdictFilter(v);
