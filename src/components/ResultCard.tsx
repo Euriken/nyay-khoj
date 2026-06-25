@@ -1,4 +1,4 @@
-import { ExternalLink, ChevronDown, ChevronUp, Sparkles, Share2, Copy, Check } from "lucide-react";
+import { ExternalLink, ChevronDown, ChevronUp, Sparkles, Share2, Copy, Check, MessageSquare } from "lucide-react";
 import { useState, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
@@ -28,7 +28,8 @@ export const ResultCard = ({
   onIpcClick, 
   onCaseClick,
   isCompared = false,
-  onToggleCompare
+  onToggleCompare,
+  onAskAdvisor,
 }: { 
   result: CaseResult; 
   query: string; 
@@ -37,6 +38,7 @@ export const ResultCard = ({
   onCaseClick?: (id: number, e: React.MouseEvent) => void;
   isCompared?: boolean;
   onToggleCompare?: (id: number) => void;
+  onAskAdvisor?: (contextMessage: string) => void;
 }) => {
   const [explanation, setExplanation] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -291,6 +293,29 @@ export const ResultCard = ({
               <p className="text-xs text-muted-foreground leading-relaxed font-legal">{explanation}</p>
             )}
           </div>
+        )}
+
+        {/* Ask Advisor Button */}
+        {onAskAdvisor && (
+          <button
+            onClick={() => {
+              const ctx = [
+                `I need advice about this case: ${result.title}`,
+                `Court: ${result.court} | Type: ${result.case_type}${ result.year ? ` | Year: ${result.year}` : ""}`,
+                result.verdict && result.verdict !== "See Judgment" ? `Verdict: ${result.verdict}` : null,
+                result.ipc_sections ? `IPC Sections: ${result.ipc_sections}` : null,
+                result.bns_sections ? `BNS Equivalent: ${result.bns_sections}` : null,
+                result.sentence_range ? `Sentence range: ${result.sentence_range}` : null,
+                `\nCase snippet: "${result.text?.slice(0, 300)}..."`,
+                `\nWhat are the key legal implications and what should a person do if they face a similar situation?`,
+              ].filter(Boolean).join("\n");
+              onAskAdvisor(ctx);
+            }}
+            className="ml-9 flex items-center gap-1.5 text-xs text-primary/70 hover:text-primary transition-colors group"
+          >
+            <MessageSquare className="h-3 w-3" />
+            <span className="font-medium tracking-wide uppercase text-[10px]">Ask Legal Advisor about this case</span>
+          </button>
         )}
 
         <div className="pl-9 flex items-center justify-between pt-1 border-t border-border/50">

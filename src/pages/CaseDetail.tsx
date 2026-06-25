@@ -1,7 +1,7 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { SearchHeader } from "@/components/SearchHeader";
-import { ArrowLeft, ExternalLink, Loader2, Scale, Sparkles, Printer } from "lucide-react";
+import { ArrowLeft, ExternalLink, Loader2, Scale, Sparkles, Printer, Share2 } from "lucide-react";
 
 const API_BASE = import.meta.env.DEV ? "http://localhost:5001" : "https://euriken-nyay-khoj.hf.space";
 
@@ -41,6 +41,18 @@ const CaseDetail = () => {
   const [related, setRelated] = useState<RelatedCase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
+
+  const handleShare = async () => {
+    const url = window.location.href;
+    if (navigator.share) {
+      try { await navigator.share({ title: caseData?.title, url }); } catch (_) { /* cancelled */ }
+    } else {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  };
 
   const renderInteractiveText = (text: string) => {
     if (!text) return null;
@@ -209,6 +221,13 @@ const CaseDetail = () => {
               >
                 <Printer className="h-3.5 w-3.5" />
                 Print / Save PDF
+              </button>
+              <button
+                onClick={handleShare}
+                className="inline-flex items-center gap-1.5 text-sm font-medium text-muted-foreground hover:text-primary hover:underline transition-colors cursor-pointer"
+              >
+                <Share2 className="h-3.5 w-3.5" />
+                {copied ? "Link Copied!" : "Share"}
               </button>
             </div>
           </div>

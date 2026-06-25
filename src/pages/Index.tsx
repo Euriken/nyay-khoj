@@ -95,6 +95,12 @@ const Index = () => {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [comparedCases, setComparedCases] = useState<CaseResult[]>([]);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
+  const [advisorMessage, setAdvisorMessage] = useState<string | undefined>(undefined);
+
+  const handleAskAdvisor = useCallback((contextMessage: string) => {
+    setAdvisorMessage(contextMessage);
+    setActiveTab("advisor"); // switch on mobile
+  }, []);
 
   const handleCaseClick = useCallback((id: number, e?: React.MouseEvent) => {
     if (e) {
@@ -606,7 +612,28 @@ const Index = () => {
             )}
 
             {!loading && searched && (filteredResults?.length ?? 0) === 0 && (
-              <p className="text-center text-muted-foreground mt-20">No judgments found.</p>
+              <div className="mt-16 flex flex-col items-center text-center gap-6 animate-in fade-in duration-300">
+                <div className="w-16 h-16 rounded-full bg-muted/60 border border-border flex items-center justify-center text-3xl select-none">
+                  ⚖️
+                </div>
+                <div className="space-y-2">
+                  <p className="text-base font-semibold text-foreground">No judgments found</p>
+                  <p className="text-xs text-muted-foreground max-w-sm leading-relaxed font-legal">
+                    Try a broader query, remove filters, or explore one of these common topics:
+                  </p>
+                </div>
+                <div className="flex flex-wrap justify-center gap-2">
+                  {["murder", "property dispute", "bail", "dowry", "contract breach", "cheque bounce", "rape", "land acquisition"].map((suggestion) => (
+                    <button
+                      key={suggestion}
+                      onClick={() => { setSearchTrigger(suggestion); handleSearch(suggestion); }}
+                      className="px-3 py-1.5 rounded-full text-xs border border-primary/30 text-primary/80 hover:border-primary hover:text-primary hover:bg-primary/10 transition-all duration-200 font-medium capitalize"
+                    >
+                      {suggestion}
+                    </button>
+                  ))}
+                </div>
+              </div>
             )}
 
             {!loading && (filteredResults?.length ?? 0) > 0 && (
@@ -621,6 +648,7 @@ const Index = () => {
                     onCaseClick={handleCaseClick}
                     isCompared={comparedCases.some(c => c.id === r.id)}
                     onToggleCompare={handleToggleCompare}
+                    onAskAdvisor={handleAskAdvisor}
                   />
                 ))}
 
@@ -649,7 +677,7 @@ const Index = () => {
 
           {/* Right Column: AI Legal Advisor Sidebar */}
           <div className={`${activeTab === "advisor" ? "block" : "hidden"} lg:block lg:col-span-5 xl:col-span-4 sticky top-20`}>
-            <LegalAdvisor onIpcClick={handleIpcClick} />
+            <LegalAdvisor onIpcClick={handleIpcClick} externalMessage={advisorMessage} />
           </div>
 
         </div>

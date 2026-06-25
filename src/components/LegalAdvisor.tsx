@@ -18,12 +18,19 @@ const STARTER_PROMPTS = [
 
 const CHAT_HISTORY_KEY = "nyaykhoj_chat_history";
 
-export const LegalAdvisor = ({ onIpcClick }: { onIpcClick?: (ipc: string) => void }) => {
+export const LegalAdvisor = ({
+  onIpcClick,
+  externalMessage,
+}: {
+  onIpcClick?: (ipc: string) => void;
+  externalMessage?: string;
+}) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [errorOccurred, setErrorOccurred] = useState(false);
-  
+  const [caseContext, setCaseContext] = useState<string | null>(null);
+
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Load chat history on mount
@@ -56,6 +63,17 @@ export const LegalAdvisor = ({ onIpcClick }: { onIpcClick?: (ipc: string) => voi
   useEffect(() => {
     scrollToBottom();
   }, [messages, loading]);
+
+  // Auto-send when a case context is pushed in from outside
+  const prevExternalRef = useRef<string | undefined>(undefined);
+  useEffect(() => {
+    if (externalMessage && externalMessage !== prevExternalRef.current) {
+      prevExternalRef.current = externalMessage;
+      setCaseContext(externalMessage);
+      handleSendMessage(externalMessage);
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [externalMessage]);
 
   const handleSendMessage = async (textToSend: string) => {
     if (!textToSend.trim() || loading) return;
@@ -127,6 +145,19 @@ export const LegalAdvisor = ({ onIpcClick }: { onIpcClick?: (ipc: string) => voi
 
   return (
     <div className="flex flex-col h-[650px] rounded-lg border border-border bg-card overflow-hidden">
+      {/* Case Context Banner */}
+      {caseContext && (
+        <div className="px-4 py-2 bg-primary/8 border-b border-primary/20 flex items-center justify-between gap-2">
+          <p className="text-[10px] text-primary font-semibold uppercase tracking-wider truncate">
+            ⚖ Advising on: <span className="text-foreground font-normal normal-case">{caseContext.split('\n')[0].replace('I need advice about this case: ', '')}</span>
+          </p>
+          <button
+            onClick={() => { setCaseContext(null); }}
+            className="text-[10px] text-muted-foreground hover:text-primary transition-colors flex-shrink-0"
+          >✕</button>
+        </div>
+      )}
+
       {/* Header */}
       <div className="flex items-center justify-between border-b border-border bg-card/60 px-4 py-3">
         <div className="flex items-center gap-2">
