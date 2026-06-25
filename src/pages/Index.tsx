@@ -287,7 +287,7 @@ const Index = () => {
   };
 
   const handleExportCSV = () => {
-    if (results.length === 0) return;
+    if ((results?.length ?? 0) === 0) return;
     
     const headers = ["Title", "Court", "Case Type", "Verdict", "Year", "IPC Sections", "BNS Sections", "Sentence Range", "URL"];
     const rows = results.map(r => [
@@ -378,7 +378,7 @@ const Index = () => {
             <SearchForm onSearch={handleSearch} loading={loading} externalQuery={searchTrigger} />
 
             {/* Search History */}
-            {!searched && history.length > 0 && (
+            {!searched && (history?.length ?? 0) > 0 && (
               <div className="mt-4 flex flex-wrap items-center gap-2">
                 <Clock className="h-3.5 w-3.5 text-muted-foreground" />
                 {history.slice(0, 5).map((h, i) => (
@@ -581,7 +581,7 @@ const Index = () => {
 
                 <div className="flex items-center justify-between">
                   <p className="text-xs text-muted-foreground">
-                    <span className="text-primary font-medium">{filteredResults.length}</span> of{" "}
+                    <span className="text-primary font-medium">{(filteredResults?.length ?? 0)}</span> of{" "}
                     <span className="text-foreground">{totalResults}</span> judgments shown
                   </p>
                   <button
@@ -602,11 +602,11 @@ const Index = () => {
               </div>
             )}
 
-            {!loading && searched && filteredResults.length === 0 && (
+            {!loading && searched && (filteredResults?.length ?? 0) === 0 && (
               <p className="text-center text-muted-foreground mt-20">No judgments found.</p>
             )}
 
-            {!loading && filteredResults.length > 0 && (
+            {!loading && (filteredResults?.length ?? 0) > 0 && (
               <div className="mt-6 space-y-4">
                 {filteredResults.map((r, i) => (
                   <ResultCard 
@@ -635,7 +635,7 @@ const Index = () => {
                           Loading...
                         </>
                       ) : (
-                        `Load More (${results.length} of ${totalResults})`
+                        `Load More (${(results?.length ?? 0)} of ${totalResults})`
                       )}
                     </button>
                   </div>
@@ -677,24 +677,24 @@ const Index = () => {
       </Sheet>
 
       {/* Floating Compare Bar */}
-      {comparedCases.length > 0 && (
+      {(comparedCases?.length ?? 0) > 0 && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 animate-in slide-in-from-bottom-5 duration-300">
           <div className="flex items-center gap-4 px-6 py-3.5 rounded-full border border-primary/20 bg-background/90 backdrop-blur-md shadow-2xl">
             <div className="flex items-center gap-2">
               <span className="w-5 h-5 rounded-full bg-primary/25 text-primary text-xs flex items-center justify-center font-bold">
-                {comparedCases.length}
+                {(comparedCases?.length ?? 0)}
               </span>
               <span className="text-xs font-semibold text-foreground">
-                {comparedCases.length === 1 ? "case selected" : "cases selected"}
+                {(comparedCases?.length ?? 0) === 1 ? "case selected" : "cases selected"}
               </span>
             </div>
             <div className="h-4 w-[1px] bg-border" />
             <div className="flex items-center gap-2">
               <button
                 onClick={() => setIsCompareOpen(true)}
-                disabled={comparedCases.length < 2}
+                disabled={(comparedCases?.length ?? 0) < 2}
                 className="px-4 py-1.5 rounded-full bg-primary text-primary-foreground hover:bg-primary/95 text-xs font-bold transition-colors disabled:opacity-50 disabled:cursor-not-allowed uppercase tracking-wider flex items-center gap-1.5"
-                title={comparedCases.length < 2 ? "Select at least 2 cases to compare" : "Open comparison matrix"}
+                title={(comparedCases?.length ?? 0) < 2 ? "Select at least 2 cases to compare" : "Open comparison matrix"}
               >
                 <Scale className="h-3.5 w-3.5" />
                 Compare Now
