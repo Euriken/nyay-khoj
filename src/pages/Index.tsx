@@ -181,13 +181,16 @@ const Index = () => {
         body: JSON.stringify(body),
       });
       const data = await res.json();
-      if (data.error) throw new Error(data.error);
+      if (!Array.isArray(data) && data.error) throw new Error(data.error);
+      // Normalize: backend may return a flat array OR {results, total}
+      const pageResults: CaseResult[] = Array.isArray(data) ? data : (data.results ?? []);
+      const pageTotal: number = Array.isArray(data) ? data.length : (data.total ?? data.length ?? 0);
       if (append) {
-        setResults(prev => [...prev, ...data.results]);
+        setResults(prev => [...prev, ...pageResults]);
       } else {
-        setResults(data.results);
+        setResults(pageResults);
       }
-      setTotalResults(data.total);
+      setTotalResults(pageTotal);
       setCurrentPage(page);
     } catch (e) {
       if (!append) setResults([]);
