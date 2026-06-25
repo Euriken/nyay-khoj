@@ -1,8 +1,8 @@
+@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&family=Cinzel:wght@400;500;600&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&family=Cinzel:wght@400;500;600&display=swap');
 
 @layer base {
   :root {
@@ -43,6 +43,36 @@
     --sidebar-accent-foreground: 45 30% 90%;
     --sidebar-border: 222 30% 18%;
     --sidebar-ring: 43 65% 55%;
+  }
+
+  .light {
+    --background: 36 33% 97%;
+    --foreground: 222 47% 10%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 222 47% 10%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 47% 10%;
+
+    --primary: 24 55% 42%;
+    --primary-foreground: 36 33% 97%;
+
+    --secondary: 40 20% 90%;
+    --secondary-foreground: 222 47% 10%;
+
+    --muted: 36 30% 93%;
+    --muted-foreground: 222 20% 45%;
+
+    --accent: 24 55% 42%;
+    --accent-foreground: 36 33% 97%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 210 40% 98%;
+
+    --border: 30 15% 85%;
+    --input: 30 15% 85%;
+    --ring: 24 55% 42%;
   }
 }
 
