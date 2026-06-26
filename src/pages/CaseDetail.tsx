@@ -157,11 +157,14 @@ const CaseDetail = () => {
       <SearchHeader />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        {/* Back link */}
-        <Link to="/" className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mb-6">
+        {/* Back button — returns to previous results page */}
+        <button
+          onClick={() => navigate(-1)}
+          className="inline-flex items-center gap-1.5 text-sm text-muted-foreground hover:text-primary transition-colors mb-6"
+        >
           <ArrowLeft className="h-4 w-4" />
-          Back to Search
-        </Link>
+          Back to Results
+        </button>
 
         {/* Case Header */}
         <div className="rounded-lg border border-border bg-card overflow-hidden">

@@ -720,7 +720,7 @@ const Index = () => {
                 ))}
 
                 {/* Pagination — Previous / Page indicator / Next */}
-                {totalPages > 1 && (
+                {(filteredResults?.length ?? 0) > 0 && (
                   <div className="flex items-center justify-center gap-3 pt-6 pb-2">
                     <button
                       id="prev-page-btn"

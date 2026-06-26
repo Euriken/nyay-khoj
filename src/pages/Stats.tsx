@@ -29,6 +29,7 @@ interface StatData {
   by_year: { year: number; count: number }[];
   by_ipc: { section: string; count: number }[];
   by_verdict: { verdict: string; count: number }[];
+  by_court_type: { court_type: string; count: number }[];
 }
 
 const COLORS = ["#8B5CF6", "#3B82F6", "#14B8A6", "#10B981", "#F59E0B", "#EF4444", "#6366F1"];
@@ -116,7 +117,7 @@ export default function Stats() {
           </p>
         </div>
 
-        {/* Stats Grid cards */}
+        {/* Header Stats: Total + Court Type breakdown */}
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           <div className="rounded-lg border border-border bg-card p-5 space-y-2 flex flex-col justify-between">
             <span className="text-xs text-muted-foreground tracking-widest uppercase font-bold">Total Cases</span>
@@ -287,6 +288,69 @@ export default function Stats() {
             </div>
           </div>
         </div>
+
+        {/* Court Type Distribution (Supreme vs High vs District) */}
+        {(data.by_court_type?.length ?? 0) > 0 && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Pie chart */}
+            <div className="rounded-lg border border-border bg-card p-5 space-y-4">
+              <h3 className="text-xs font-semibold tracking-wider text-primary uppercase">Court Tier Distribution</h3>
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={data.by_court_type}
+                      dataKey="count"
+                      nameKey="court_type"
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={55}
+                      outerRadius={85}
+                      paddingAngle={3}
+                    >
+                      {data.by_court_type.map((_, index) => (
+                        <Cell key={`ct-cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip
+                      contentStyle={{ backgroundColor: "#1e1e2e", borderColor: "#313244", color: "#cdd6f4" }}
+                    />
+                    <Legend verticalAlign="bottom" height={36} iconType="circle" wrapperStyle={{ fontSize: "10px" }} />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </div>
+
+            {/* Number cards for each tier */}
+            <div className="rounded-lg border border-border bg-card p-5 space-y-3 flex flex-col justify-center">
+              <h3 className="text-xs font-semibold tracking-wider text-primary uppercase">Court Tier Breakdown</h3>
+              <div className="space-y-3">
+                {data.by_court_type.map((ct, i) => {
+                  const pct = data.total_cases > 0 ? Math.round((ct.count / data.total_cases) * 100) : 0;
+                  return (
+                    <div key={ct.court_type} className="flex items-center gap-3">
+                      <span
+                        className="w-3 h-3 rounded-full flex-shrink-0"
+                        style={{ backgroundColor: COLORS[i % COLORS.length] }}
+                      />
+                      <span className="text-xs text-muted-foreground flex-1 truncate">{ct.court_type}</span>
+                      <span className="text-xs font-semibold text-foreground tabular-nums">
+                        {ct.count.toLocaleString()}
+                      </span>
+                      <span className="text-[10px] text-muted-foreground w-10 text-right tabular-nums">{pct}%</span>
+                      <div className="w-24 bg-muted rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className="h-1.5 rounded-full"
+                          style={{ width: `${pct}%`, backgroundColor: COLORS[i % COLORS.length] }}
+                        />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+          </div>
+        )}
       </main>
 
       <footer className="border-t border-border mt-16 py-6">
