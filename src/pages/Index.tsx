@@ -98,7 +98,9 @@ const Index = () => {
   const [advisorMessage, setAdvisorMessage] = useState<string | undefined>(undefined);
   const [slowWarning, setSlowWarning] = useState(false);
   const [searchTimedOut, setSearchTimedOut] = useState(false);
+  const [totalPages, setTotalPages] = useState(1);
   const retryFnRef = useRef<(() => void) | null>(null);
+  const resultsTopRef = useRef<HTMLDivElement>(null);
 
   // Silent keep-alive ping so HF Space is warm before first search
   useEffect(() => {
@@ -198,7 +200,7 @@ const Index = () => {
     const timeoutId = setTimeout(() => controller.abort(), 60000);
 
     try {
-      const body: any = { query: q, page, per_page: 10 };
+      const body: any = { query: q, page, per_page: 5 };
       if (currentYf !== "") body.year_from = currentYf;
       if (currentYt !== "") body.year_to = currentYt;
       if (currentVerdict !== "All") body.verdict = currentVerdict;
@@ -216,12 +218,10 @@ const Index = () => {
       // Normalize: backend may return a flat array OR {results, total}
       const pageResults: CaseResult[] = Array.isArray(data) ? data : (data.results ?? []);
       const pageTotal: number = Array.isArray(data) ? data.length : (data.total ?? data.length ?? 0);
-      if (append) {
-        setResults(prev => [...prev, ...pageResults]);
-      } else {
-        setResults(pageResults);
-      }
+      const pageTotalPages: number = data.total_pages ?? Math.ceil(pageTotal / 5);
+      setResults(pageResults);
       setTotalResults(pageTotal);
+      setTotalPages(pageTotalPages);
       setCurrentPage(page);
       setSlowWarning(false);
     } catch (e: any) {
@@ -288,11 +288,12 @@ const Index = () => {
     handleSearch(ipc);
   };
 
-  const handleLoadMore = () => {
-    handleSearch(query, currentPage + 1, true);
+  const handlePageChange = (newPage: number) => {
+    handleSearch(query, newPage, false);
+    // Scroll to top of results list
+    setTimeout(() => resultsTopRef.current?.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
   };
 
-  const hasMore = (results?.length ?? 0) < totalResults;
 
   const handleVerdictChange = (v: string) => {
     setVerdictFilter(v);
@@ -703,7 +704,7 @@ const Index = () => {
             )}
 
             {!loading && (filteredResults?.length ?? 0) > 0 && (
-              <div className="mt-6 space-y-4">
+              <div ref={resultsTopRef} className="mt-6 space-y-4">
                 {filteredResults.map((r, i) => (
                   <ResultCard 
                     key={r.id || i} 
@@ -718,22 +719,32 @@ const Index = () => {
                   />
                 ))}
 
-                {/* Load More Button */}
-                {hasMore && (
-                  <div className="flex justify-center pt-4">
+                {/* Pagination — Previous / Page indicator / Next */}
+                {totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-3 pt-6 pb-2">
                     <button
-                      onClick={handleLoadMore}
-                      disabled={loadingMore}
-                      className="px-6 py-2.5 rounded-lg border border-primary/30 text-primary text-sm font-medium hover:bg-primary/10 transition-colors disabled:opacity-50 flex items-center gap-2"
+                      id="prev-page-btn"
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage <= 1}
+                      className="px-4 py-2 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
                     >
-                      {loadingMore ? (
-                        <>
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                          Loading...
-                        </>
-                      ) : (
-                        `Load More (${(results?.length ?? 0)} of ${totalResults})`
-                      )}
+                      ← Previous
+                    </button>
+
+                    <span className="text-xs text-muted-foreground px-2">
+                      Page{" "}
+                      <span className="text-foreground font-semibold">{currentPage}</span>
+                      {" "}of{" "}
+                      <span className="text-foreground font-semibold">{totalPages}</span>
+                    </span>
+
+                    <button
+                      id="next-page-btn"
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage >= totalPages}
+                      className="px-4 py-2 rounded-lg border border-border text-sm font-medium text-muted-foreground hover:text-foreground hover:border-primary/40 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                    >
+                      Next →
                     </button>
                   </div>
                 )}
