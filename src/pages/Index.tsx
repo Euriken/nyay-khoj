@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { useSearchParams } from "react-router-dom";
 import { SearchHeader } from "@/components/SearchHeader";
 import { SearchForm } from "@/components/SearchForm";
@@ -96,6 +96,14 @@ const Index = () => {
   const [comparedCases, setComparedCases] = useState<CaseResult[]>([]);
   const [isCompareOpen, setIsCompareOpen] = useState(false);
   const [advisorMessage, setAdvisorMessage] = useState<string | undefined>(undefined);
+  const [slowWarning, setSlowWarning] = useState(false);
+  const [searchTimedOut, setSearchTimedOut] = useState(false);
+  const retryFnRef = useRef<(() => void) | null>(null);
+
+  // Silent keep-alive ping so HF Space is warm before first search
+  useEffect(() => {
+    fetch(`${API_BASE}/ping`, { method: "GET" }).catch(() => {/* silently ignore */});
+  }, []);
 
   const handleAskAdvisor = useCallback((contextMessage: string) => {
     setAdvisorMessage(contextMessage);
@@ -157,8 +165,14 @@ const Index = () => {
     if (!append) {
       setLoading(true);
       setSearched(true);
+      setSlowWarning(false);
+      setSearchTimedOut(false);
       setQuery(q);
       setCurrentPage(1);
+
+      // Store retry function so the Retry button can re-run the same query
+      retryFnRef.current = () =>
+        handleSearch(q, page, append, overrideYf, overrideYt, overrideVerdict, overrideType, overrideCourt);
       
       const newParams: any = { q };
       if (currentYf !== "") newParams.yf = currentYf.toString();
@@ -173,6 +187,16 @@ const Index = () => {
     } else {
       setLoadingMore(true);
     }
+
+    // Show slow-warning banner after 5 seconds
+    const slowTimer = !append
+      ? setTimeout(() => setSlowWarning(true), 5000)
+      : null;
+
+    // 60-second hard timeout via AbortController
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 60000);
+
     try {
       const body: any = { query: q, page, per_page: 10 };
       if (currentYf !== "") body.year_from = currentYf;
@@ -185,6 +209,7 @@ const Index = () => {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body),
+        signal: controller.signal,
       });
       const data = await res.json();
       if (!Array.isArray(data) && data.error) throw new Error(data.error);
@@ -198,10 +223,18 @@ const Index = () => {
       }
       setTotalResults(pageTotal);
       setCurrentPage(page);
-    } catch (e) {
+      setSlowWarning(false);
+    } catch (e: any) {
       if (!append) setResults([]);
-      toast.error("Search failed", { description: "Could not connect to the server. Please try again." });
+      if (e?.name === "AbortError") {
+        setSearchTimedOut(true);
+        setSlowWarning(false);
+      } else {
+        toast.error("Search failed", { description: "Could not connect to the server. Please try again." });
+      }
     } finally {
+      clearTimeout(timeoutId);
+      if (slowTimer) clearTimeout(slowTimer);
       setLoading(false);
       setLoadingMore(false);
     }
@@ -605,9 +638,42 @@ const Index = () => {
 
             {loading && (
               <div className="mt-6 space-y-4">
+                {/* Slow-start warning — shows after 5s */}
+                {slowWarning && (
+                  <div className="flex items-center gap-3 px-4 py-3 rounded-lg border border-amber-500/30 bg-amber-500/10 animate-in fade-in duration-500">
+                    <Loader2 className="h-4 w-4 animate-spin text-amber-400 flex-shrink-0" />
+                    <p className="text-xs text-amber-300 leading-relaxed">
+                      <span className="font-semibold">Waking up search engine…</span>{" "}
+                      This may take up to 30 seconds on the first search — the server is cold-starting.
+                    </p>
+                  </div>
+                )}
                 <SkeletonCard />
                 <SkeletonCard />
                 <SkeletonCard />
+              </div>
+            )}
+
+            {/* Timeout error with Retry button */}
+            {!loading && searchTimedOut && (
+              <div className="mt-10 flex flex-col items-center text-center gap-4 animate-in fade-in duration-300">
+                <div className="w-14 h-14 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-2xl select-none">
+                  ⏱
+                </div>
+                <div className="space-y-1">
+                  <p className="text-sm font-semibold text-foreground">Search timed out</p>
+                  <p className="text-xs text-muted-foreground max-w-xs leading-relaxed">
+                    The server may still be starting up. Please try again — it should be faster now.
+                  </p>
+                </div>
+                <button
+                  id="retry-search-btn"
+                  onClick={() => retryFnRef.current?.()}
+                  className="px-5 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-medium hover:opacity-90 transition-opacity flex items-center gap-2"
+                >
+                  <Loader2 className="h-3.5 w-3.5" />
+                  Retry Search
+                </button>
               </div>
             )}
 
