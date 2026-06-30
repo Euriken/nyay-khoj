@@ -246,9 +246,18 @@ export default function Stats() {
             <h3 className="text-xs font-semibold tracking-wider text-primary uppercase">Judgments by Case Type</h3>
             <div className="h-64">
               <ResponsiveContainer width="100%" height="100%">
-                <BarChart data={data.by_type} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+                <BarChart data={data.by_type} margin={{ top: 10, right: 10, left: -20, bottom: 25 }}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#313244" />
-                  <XAxis dataKey="type" stroke="#7f8497" fontSize={10} interval={0} tickFormatter={(value) => value.slice(0, 10)} />
+                  <XAxis 
+                    dataKey="type" 
+                    stroke="#7f8497" 
+                    fontSize={10} 
+                    interval={0} 
+                    tickFormatter={(value) => value.slice(0, 10)}
+                    angle={-35}
+                    textAnchor="end"
+                    height={50}
+                  />
                   <YAxis stroke="#7f8497" fontSize={10} />
                   <Tooltip
                     contentStyle={{ backgroundColor: "#1e1e2e", borderColor: "#313244", color: "#cdd6f4" }}

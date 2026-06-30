@@ -7,7 +7,7 @@ import { SkeletonCard } from "@/components/SkeletonCard";
 import { LegalAdvisor } from "@/components/LegalAdvisor";
 import { Loader2, X, Clock, SlidersHorizontal, Scale } from "lucide-react";
 import { toast } from "sonner";
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetDescription } from "@/components/ui/sheet";
 import { DrawerCaseDetail } from "@/components/DrawerCaseDetail";
 import { CaseComparison } from "@/components/CaseComparison";
 
@@ -767,6 +767,9 @@ const Index = () => {
             <SheetTitle className="text-primary font-display font-bold uppercase tracking-widest text-sm">
               Judgment Details
             </SheetTitle>
+            <SheetDescription className="sr-only">
+              Detailed view of the selected court judgment
+            </SheetDescription>
           </SheetHeader>
           {selectedCaseId !== null && (
             <DrawerCaseDetail 

@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { X, ExternalLink, Scale } from "lucide-react";
 
 export interface CaseResult {
@@ -47,6 +47,9 @@ export const CaseComparison = ({
             <Scale className="h-5 w-5 text-primary animate-pulse" />
             Case Comparison Matrix
           </DialogTitle>
+          <DialogDescription className="sr-only">
+            Compare legal details of selected court judgments
+          </DialogDescription>
         </DialogHeader>
 
         {cases.length === 0 ? (
