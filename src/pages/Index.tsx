@@ -411,7 +411,7 @@ const Index = () => {
                   </p>
                   <p className="text-muted-foreground text-sm leading-relaxed font-legal">
                     Namaste! Describe your legal situation below and I will search through{" "}
-                    <span className="text-foreground font-medium">37,484 Indian court judgments</span>{" "}
+                    <span className="text-foreground font-medium">22,904 Indian court judgments</span>{" "}
                     to find the most relevant cases. You may also consult me directly in the Legal Advisor tab.
                   </p>
                 </div>
