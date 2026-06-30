@@ -43,31 +43,78 @@ export const DrawerCaseDetail = ({ caseId, onSectionClick, onRelatedCaseClick }:
   const [related, setRelated] = useState<RelatedCase[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [slowWarning, setSlowWarning] = useState(false);
+  const [searchTimedOut, setSearchTimedOut] = useState(false);
+  const [retryCount, setRetryCount] = useState(0);
+
+  const handleRetry = () => {
+    setRetryCount(prev => prev + 1);
+  };
 
   useEffect(() => {
+    if (!caseId) return;
+
+    let slowTimer: NodeJS.Timeout | null = null;
+    let timeoutId: NodeJS.Timeout | null = null;
+    const controller = new AbortController();
+
     const fetchCase = async () => {
       setLoading(true);
       setError(null);
+      setSearchTimedOut(false);
+      setSlowWarning(false);
+
+      // Show slow warning after 5 seconds
+      slowTimer = setTimeout(() => {
+        setSlowWarning(true);
+      }, 5000);
+
+      // Abort after 30 seconds
+      timeoutId = setTimeout(() => {
+        controller.abort();
+      }, 30000);
+
       try {
-        const res = await fetch(`${API_BASE}/case/${caseId}`);
+        const res = await fetch(`${API_BASE}/case/${caseId}`, {
+          signal: controller.signal
+        });
         if (!res.ok) throw new Error("Case not found");
         const data = await res.json();
         setCaseData(data);
 
         // Fetch related in parallel
-        const relRes = await fetch(`${API_BASE}/related/${caseId}`);
-        if (relRes.ok) {
-          const relData = await relRes.json();
-          setRelated(relData);
+        try {
+          const relRes = await fetch(`${API_BASE}/related/${caseId}`, {
+            signal: controller.signal
+          });
+          if (relRes.ok) {
+            const relData = await relRes.json();
+            setRelated(relData);
+          }
+        } catch (relError) {
+          console.error("Failed to load related cases", relError);
         }
       } catch (e: any) {
-        setError(e.message || "Failed to load case");
+        if (e.name === "AbortError") {
+          setSearchTimedOut(true);
+        } else {
+          setError(e.message || "Failed to load case");
+        }
       } finally {
+        if (slowTimer) clearTimeout(slowTimer);
+        if (timeoutId) clearTimeout(timeoutId);
         setLoading(false);
       }
     };
-    if (caseId) fetchCase();
-  }, [caseId]);
+
+    fetchCase();
+
+    return () => {
+      if (slowTimer) clearTimeout(slowTimer);
+      if (timeoutId) clearTimeout(timeoutId);
+      controller.abort();
+    };
+  }, [caseId, retryCount]);
 
   const renderInteractiveText = (text: string) => {
     if (!text) return null;
@@ -120,17 +167,40 @@ export const DrawerCaseDetail = ({ caseId, onSectionClick, onRelatedCaseClick }:
 
   if (loading) {
     return (
-      <div className="flex flex-col items-center justify-center py-20 gap-3">
+      <div className="flex flex-col items-center justify-center py-20 gap-4 max-w-sm mx-auto px-6">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
-        <p className="text-muted-foreground text-sm">Loading judgment...</p>
+        <p className="text-muted-foreground text-sm text-center">Loading judgment...</p>
+        {slowWarning && (
+          <div className="flex items-center gap-3 px-4 py-3 rounded-lg border border-amber-500/30 bg-amber-500/10 animate-in fade-in duration-500">
+            <p className="text-xs text-amber-300 text-center leading-relaxed font-legal">
+              <span className="font-semibold">Waking up the server…</span> This may take up to a minute as the server is cold-starting.
+            </p>
+          </div>
+        )}
       </div>
     );
   }
 
-  if (error || !caseData) {
+  if (error || searchTimedOut || !caseData) {
     return (
-      <div className="py-10 text-center">
-        <p className="text-destructive text-sm mb-4">{error || "Case not found"}</p>
+      <div className="py-20 px-6 flex flex-col items-center text-center gap-5 max-w-sm mx-auto animate-in fade-in duration-300">
+        <div className="w-12 h-12 rounded-full bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-xl select-none">
+          ⏱
+        </div>
+        <div className="space-y-1.5">
+          <p className="text-sm font-semibold text-foreground">Failed to load judgment</p>
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            {searchTimedOut 
+              ? "Failed to load judgment. The server may be starting up."
+              : (error || "Failed to load judgment. The server may be starting up.")}
+          </p>
+        </div>
+        <button
+          onClick={handleRetry}
+          className="w-full px-4 py-2 rounded-lg bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity"
+        >
+          Retry Loading
+        </button>
       </div>
     );
   }
