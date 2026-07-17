@@ -1,0 +1,11 @@
+.env
+# *.csv  (removed - prediction CSVs needed)
+neondb_*.csv
+opennyaya*.csv
+*.dump
+opennyaya/
+__pycache__/
+*.pyc
+injudgements_*.csv
+nyay_khoj_legal_classifier/
+nyay_khoj_verdict_classifier/
