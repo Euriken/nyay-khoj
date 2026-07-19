@@ -388,8 +388,7 @@ const CaseDetail = () => {
           <p className="text-xs text-muted-foreground tracking-wide">
             © 2026 Nyay Khoj — For informational purposes only
           </p>
-          <p className="text-xs text-primary/50 tracking-widest uppercase"
-             style={{ fontFamily: "'Cinzel', serif" }}>
+          <p className="text-xs text-register-accent/60 tracking-widest uppercase font-registerSerif font-semibold">
             Satyameva Jayate
           </p>
         </div>

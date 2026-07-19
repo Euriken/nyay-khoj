@@ -405,8 +405,7 @@ const Index = () => {
                   ⚖️
                 </div>
                 <div>
-                  <p className="text-primary text-sm font-medium mb-1"
-                     style={{ fontFamily: "'Cinzel', serif" }}>
+                  <p className="text-register-accent text-sm font-semibold mb-1 font-registerSerif">
                     Adv. Nyay — Your Legal Assistant
                   </p>
                   <p className="text-muted-foreground text-sm leading-relaxed font-legal">
@@ -704,20 +703,48 @@ const Index = () => {
             )}
 
             {!loading && (filteredResults?.length ?? 0) > 0 && (
-              <div ref={resultsTopRef} className="mt-6 space-y-4">
-                {filteredResults.map((r, i) => (
-                  <ResultCard 
-                    key={r.id || i} 
-                    result={r} 
-                    query={query} 
-                    index={i} 
-                    onIpcClick={handleIpcClick} 
-                    onCaseClick={handleCaseClick}
-                    isCompared={comparedCases.some(c => c.id === r.id)}
-                    onToggleCompare={handleToggleCompare}
-                    onAskAdvisor={handleAskAdvisor}
-                  />
-                ))}
+              <div ref={resultsTopRef} className="mt-8 space-y-6">
+                {/* Masthead Header */}
+                <div className="text-center py-6 border-b-2 border-register-rule mb-6 select-none animate-in fade-in duration-300">
+                  <p className="font-registerMono text-[9px] tracking-[0.2em] uppercase text-register-muted">
+                    In the matter of a search
+                  </p>
+                  <h1 className="font-registerSerif text-3xl font-bold tracking-[0.1em] text-register-title my-2">
+                    NYAY KHOJ
+                  </h1>
+                  <p className="font-registerMono text-[9px] tracking-wider uppercase text-register-muted">
+                    Case Register · Supreme Court Division
+                  </p>
+                </div>
+
+                {/* Column Headers Row */}
+                <div className="flex font-registerMono text-[9px] tracking-wider text-register-muted uppercase border-b border-register-divider pb-2 mb-2 px-5 select-none">
+                  <div className="w-8 pr-2 text-right border-r border-register-divider">No.</div>
+                  <div className="flex-1 pl-4">Particulars</div>
+                  <div className="w-16 text-center pl-2 hidden sm:block">Result</div>
+                </div>
+
+                {/* Results List */}
+                <div className="space-y-4">
+                  {filteredResults.map((r, i) => (
+                    <ResultCard 
+                      key={r.id || i} 
+                      result={r} 
+                      query={query} 
+                      index={i} 
+                      onIpcClick={handleIpcClick} 
+                      onCaseClick={handleCaseClick}
+                      isCompared={comparedCases.some(c => c.id === r.id)}
+                      onToggleCompare={handleToggleCompare}
+                      onAskAdvisor={handleAskAdvisor}
+                    />
+                  ))}
+                </div>
+
+                {/* Footer showing result count */}
+                <div className="font-registerMono text-[9px] tracking-wider text-register-muted uppercase text-center border-t border-register-divider pt-4 mt-6 select-none">
+                  {filteredResults.length} of {totalResults} entries · ordered by relevance
+                </div>
 
                 {/* Pagination — Previous / Page indicator / Next */}
                 {(filteredResults?.length ?? 0) > 0 && (
@@ -838,8 +865,7 @@ const Index = () => {
           <p className="text-xs text-muted-foreground tracking-wide">
             © 2026 Nyay Khoj — For informational purposes only
           </p>
-          <p className="text-xs text-primary/50 tracking-widest uppercase"
-             style={{ fontFamily: "'Cinzel', serif" }}>
+          <p className="text-xs text-register-accent/60 tracking-widest uppercase font-registerSerif font-semibold">
             Satyameva Jayate
           </p>
         </div>

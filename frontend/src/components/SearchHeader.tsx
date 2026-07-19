@@ -29,8 +29,7 @@ export const SearchHeader = () => {
             <Scale className="h-5 w-5 text-primary-foreground" />
           </div>
           <div>
-            <h1 className="text-base font-bold tracking-widest text-primary uppercase"
-                style={{ fontFamily: "'Cinzel', serif" }}>
+            <h1 className="text-base font-bold tracking-widest text-primary uppercase font-registerSerif">
               Nyay Khoj
             </h1>
             <p className="text-[10px] tracking-widest text-muted-foreground uppercase">
@@ -40,8 +39,7 @@ export const SearchHeader = () => {
         </Link>
 
         {/* Center — Ashoka Chakra divider */}
-        <div className="hidden md:flex items-center gap-3 text-primary/30 text-xs tracking-widest uppercase"
-             style={{ fontFamily: "'Cinzel', serif" }}>
+        <div className="hidden md:flex items-center gap-3 text-primary/30 text-xs tracking-widest uppercase font-registerSerif">
           <div className="h-px w-16 bg-primary/20"></div>
           <span className="text-primary/50">⚖</span>
           <div className="h-px w-16 bg-primary/20"></div>
@@ -58,15 +56,13 @@ export const SearchHeader = () => {
           </button>
           <Link
             to="/"
-            className="text-[11px] font-bold tracking-wider text-muted-foreground hover:text-primary transition-colors uppercase"
-            style={{ fontFamily: "'Cinzel', serif" }}
+            className="text-[10px] font-semibold tracking-wider text-muted-foreground hover:text-primary transition-colors uppercase font-registerMono"
           >
             Search
           </Link>
           <Link
             to="/stats"
-            className="text-[11px] font-bold tracking-wider text-muted-foreground hover:text-primary transition-colors uppercase"
-            style={{ fontFamily: "'Cinzel', serif" }}
+            className="text-[10px] font-semibold tracking-wider text-muted-foreground hover:text-primary transition-colors uppercase font-registerMono"
           >
             Analytics
           </Link>

@@ -108,8 +108,7 @@ export default function Stats() {
 
         {/* Header Title */}
         <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-widest text-primary uppercase"
-              style={{ fontFamily: "'Cinzel', serif" }}>
+          <h1 className="text-2xl font-bold tracking-widest text-primary uppercase font-registerSerif">
             Dataset Insights
           </h1>
           <p className="text-xs text-muted-foreground font-legal">
@@ -367,8 +366,7 @@ export default function Stats() {
           <p className="text-xs text-muted-foreground tracking-wide">
             © 2026 Nyay Khoj — Visual Dataset Diagnostics
           </p>
-          <p className="text-xs text-primary/50 tracking-widest uppercase"
-             style={{ fontFamily: "'Cinzel', serif" }}>
+          <p className="text-xs text-register-accent/60 tracking-widest uppercase font-registerSerif font-semibold">
             Satyameva Jayate
           </p>
         </div>

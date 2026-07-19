@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=EB+Garamond:wght@400;500;600&family=Inter:wght@400;500;600&family=Cinzel:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400;1,8..60,500&family=IBM+Plex+Mono:ital,wght@0,400;0,500;1,400;1,500&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,73 +6,99 @@
 
 @layer base {
   :root {
-    --background: 222 47% 7%;
-    --foreground: 45 30% 90%;
+    --background: 48 9% 10%;
+    --foreground: 45 43% 90%;
 
-    --card: 222 40% 10%;
-    --card-foreground: 45 30% 90%;
+    --card: 48 9% 10%;
+    --card-foreground: 45 43% 90%;
 
-    --popover: 222 40% 10%;
-    --popover-foreground: 45 30% 90%;
+    --popover: 48 9% 10%;
+    --popover-foreground: 45 43% 90%;
 
-    --primary: 43 65% 55%;
-    --primary-foreground: 222 47% 7%;
+    --primary: 40 48% 60%;
+    --primary-foreground: 48 9% 10%;
 
-    --secondary: 222 35% 15%;
-    --secondary-foreground: 45 20% 80%;
+    --secondary: 45 9% 17%;
+    --secondary-foreground: 47 18% 72%;
 
-    --muted: 222 35% 13%;
-    --muted-foreground: 45 10% 50%;
+    --muted: 45 9% 17%;
+    --muted-foreground: 47 12% 56%;
 
-    --accent: 43 65% 55%;
-    --accent-foreground: 222 47% 7%;
+    --accent: 40 48% 60%;
+    --accent-foreground: 48 9% 10%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 7 60% 63%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 222 30% 18%;
-    --input: 222 30% 18%;
-    --ring: 43 65% 55%;
-    --radius: 0.5rem;
+    --border: 47 10% 21%;
+    --input: 47 10% 21%;
+    --ring: 40 48% 60%;
+    --radius: 0.25rem;
 
-    --sidebar-background: 222 40% 8%;
-    --sidebar-foreground: 45 30% 90%;
-    --sidebar-primary: 43 65% 55%;
-    --sidebar-primary-foreground: 222 47% 7%;
-    --sidebar-accent: 222 35% 15%;
-    --sidebar-accent-foreground: 45 30% 90%;
-    --sidebar-border: 222 30% 18%;
-    --sidebar-ring: 43 65% 55%;
+    --sidebar-background: 48 9% 8%;
+    --sidebar-foreground: 45 43% 90%;
+    --sidebar-primary: 40 48% 60%;
+    --sidebar-primary-foreground: 48 9% 10%;
+    --sidebar-accent: 45 9% 17%;
+    --sidebar-accent-foreground: 45 43% 90%;
+    --sidebar-border: 47 10% 21%;
+    --sidebar-ring: 40 48% 60%;
+
+    /* Register Theme Colors - Dark Mode */
+    --register-bg: #1C1B17;
+    --register-border: #3A3830;
+    --register-border-divider: #2E2C26;
+    --register-rule: #C9A96B;
+    --register-title: #F0EAD8;
+    --register-body: #C4BFAD;
+    --register-muted: #9B9682;
+    --register-accent: #C9A96B;
+    --register-stamp: #D9776A;
+    --register-highlight-bg: #D9B84A;
+    --register-highlight-text: #1C1B17;
   }
 
   .light {
-    --background: 36 33% 97%;
-    --foreground: 222 47% 10%;
+    --background: 48 33% 98%;
+    --foreground: 36 14% 15%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 10%;
+    --card: 48 33% 98%;
+    --card-foreground: 36 14% 15%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 10%;
+    --popover: 48 33% 98%;
+    --popover-foreground: 36 14% 15%;
 
-    --primary: 24 55% 42%;
-    --primary-foreground: 36 33% 97%;
+    --primary: 214 52% 24%;
+    --primary-foreground: 48 33% 98%;
 
-    --secondary: 40 20% 90%;
-    --secondary-foreground: 222 47% 10%;
+    --secondary: 44 22% 88%;
+    --secondary-foreground: 48 15% 29%;
 
-    --muted: 36 30% 93%;
-    --muted-foreground: 222 20% 45%;
+    --muted: 44 22% 88%;
+    --muted-foreground: 46 12% 49%;
 
-    --accent: 24 55% 42%;
-    --accent-foreground: 36 33% 97%;
+    --accent: 214 52% 24%;
+    --accent-foreground: 48 33% 98%;
 
-    --destructive: 0 84% 60%;
+    --destructive: 0 41% 39%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 30 15% 85%;
-    --input: 30 15% 85%;
-    --ring: 24 55% 42%;
+    --border: 43 15% 82%;
+    --input: 43 15% 82%;
+    --ring: 214 52% 24%;
+
+    /* Register Theme Colors - Light Mode */
+    --register-bg: #FCFBF7;
+    --register-border: #D8D4C8;
+    --register-border-divider: #E8E4D8;
+    --register-rule: #1E3A5F;
+    --register-title: #2A2620;
+    --register-body: #55503F;
+    --register-muted: #8A8470;
+    --register-accent: #1E3A5F;
+    --register-stamp: #8C3B3B;
+    --register-highlight-bg: #F5D66B;
+    --register-highlight-text: #2A2620;
   }
 }
 
@@ -87,11 +113,19 @@
   }
 
   h1, h2, h3 {
-    font-family: 'Cinzel', serif;
+    font-family: 'Source Serif 4', serif;
     letter-spacing: 0.03em;
   }
 
   .font-legal {
-    font-family: 'EB Garamond', serif;
+    font-family: 'Source Serif 4', serif;
+  }
+
+  .font-register-serif {
+    font-family: 'Source Serif 4', serif;
+  }
+
+  .font-register-mono {
+    font-family: 'IBM Plex Mono', monospace;
   }
 }

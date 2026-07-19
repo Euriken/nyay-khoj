@@ -16,8 +16,21 @@ export default {
       fontFamily: {
         display: ['"Space Grotesk"', 'sans-serif'],
         body: ['Inter', 'sans-serif'],
+        registerSerif: ['"Source Serif 4"', 'serif'],
+        registerMono: ['"IBM Plex Mono"', 'monospace'],
       },
       colors: {
+        register: {
+          bg: "var(--register-bg)",
+          border: "var(--register-border)",
+          divider: "var(--register-border-divider)",
+          rule: "var(--register-rule)",
+          title: "var(--register-title)",
+          body: "var(--register-body)",
+          muted: "var(--register-muted)",
+          accent: "var(--register-accent)",
+          stamp: "var(--register-stamp)",
+        },
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",
         ring: "hsl(var(--ring))",
