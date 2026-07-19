@@ -1,2 +1,7 @@
-dataset/
+dataset/*
+!dataset/llm_labeled_verdicts.csv
+!dataset/labeling_sample_ids.csv
+!dataset/verdict_predictions.csv
+!dataset/case_type_predictions.csv
+.DS_Storedataset/
 .DS_Store
